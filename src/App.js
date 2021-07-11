@@ -3,65 +3,68 @@ import Formulario from "./components/Formulario";
 import ListadoImagenes from "./components/ListadoImagenes";
 
 function App() {
-  // State del App
-
+  // state de la app
   const [busqueda, guardarBusqueda] = useState("");
   const [imagenes, guardarImagenes] = useState([]);
-  const [paginaActual, guardarPaginaActual] = useState(1);
-  const [totalPaginas, guardarTotalPaginas] = useState(5);
+  const [paginaactual, guardarPaginaActual] = useState(1);
+  const [totalpaginas, guardarTotalPaginas] = useState(1);
 
   useEffect(() => {
-    const consultarAPI = async () => {
+    const consultarApi = async () => {
       if (busqueda === "") return;
 
       const imagenesPorPagina = 30;
-      const key = process.env.REACT_APP_PIXABAY_APIKEY;
-      const url = `https://pixabay.com/api/?key=${key}&q=${busqueda}&per_page=${imagenesPorPagina}&page=${paginaActual}`;
+      const key = "1732750-d45b5378879d1e877cd1d35a6";
+      const url = `https://pixabay.com/api/?key=${key}&q=${busqueda}&per_page=${imagenesPorPagina}&page=${paginaactual}`;
 
       const respuesta = await fetch(url);
       const resultado = await respuesta.json();
 
       guardarImagenes(resultado.hits);
 
-      // Calcular el total de paginas
-      const CalcularTotalPaginas = Math.ceil(
+      // calcular el total de paginas
+      const calcularTotalPaginas = Math.ceil(
         resultado.totalHits / imagenesPorPagina
       );
-      guardarTotalPaginas(CalcularTotalPaginas);
+      guardarTotalPaginas(calcularTotalPaginas);
 
       // Mover la pantalla hacia arriba
       const jumbotron = document.querySelector(".jumbotron");
       jumbotron.scrollIntoView({ behavior: "smooth" });
     };
-    consultarAPI();
-  }, [busqueda, paginaActual]);
+    consultarApi();
+  }, [busqueda, paginaactual]);
 
-  // Definir la pagina anterior
+  // definir la página anterior
   const paginaAnterior = () => {
-    const nuevaPaginaActual = paginaActual - 1;
+    const nuevaPaginaActual = paginaactual - 1;
 
     if (nuevaPaginaActual === 0) return;
 
     guardarPaginaActual(nuevaPaginaActual);
   };
 
-  // Definir la pagina siguiente
+  // definir la pagina siguiente
   const paginaSiguiente = () => {
-    const nuevaPaginaActual = paginaActual + 1;
-    if (nuevaPaginaActual > totalPaginas) return;
+    const nuevaPaginaActual = paginaactual + 1;
+
+    if (nuevaPaginaActual > totalpaginas) return;
+
     guardarPaginaActual(nuevaPaginaActual);
   };
 
   return (
     <div className="container">
       <div className="jumbotron">
-        <p className="lead text-center">Buscador de Imagenes</p>
+        <p className="lead text-center">Buscador de Imágenes</p>
+
         <Formulario guardarBusqueda={guardarBusqueda} />
       </div>
+
       <div className="row justify-content-center">
         <ListadoImagenes imagenes={imagenes} />
 
-        {paginaActual === 1 ? null : (
+        {paginaactual === 1 ? null : (
           <button
             type="button"
             className="bbtn btn-info mr-1"
@@ -71,7 +74,7 @@ function App() {
           </button>
         )}
 
-        {paginaActual === totalPaginas ? null : (
+        {paginaactual === totalpaginas ? null : (
           <button
             type="button"
             className="bbtn btn-info"
